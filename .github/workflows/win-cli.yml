@@ -21,6 +21,15 @@ jobs:
             choco install -y ninja --no-progress
           }
 
+      - name: Portable CPU build (no -march=native)
+        shell: pwsh
+        run: |
+          $p = "scripts/windows/build.ps1"
+          $s = Get-Content $p -Raw
+          $s = $s.Replace("'-DGGML_OPENMP=OFF'", "'-DGGML_OPENMP=OFF', '-DGGML_NATIVE=OFF'")
+          Set-Content -Path $p -Value $s
+          if (-not (Select-String -Path $p -Pattern "GGML_NATIVE=OFF" -Quiet)) { throw "patch failed" }
+
       - name: Configure and build
         shell: pwsh
         run: scripts\windows\build.ps1 -Backend cpu -Profile core -BuildDir "${{ github.workspace }}\build\win"
