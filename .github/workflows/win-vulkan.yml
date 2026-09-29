@@ -27,6 +27,19 @@ jobs:
           version: 1.4.309.0
           cache: true
 
+      - name: Add SPIRV-Headers CMake package to the Vulkan SDK
+        shell: pwsh
+        run: |
+          vcpkg install spirv-headers:x64-windows
+          if ($LASTEXITCODE -ne 0) { throw "vcpkg install spirv-headers failed" }
+          $root = "$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows"
+          $dest = Join-Path $env:VULKAN_SDK "Lib/cmake/SPIRV-Headers"
+          New-Item -ItemType Directory -Force $dest | Out-Null
+          Copy-Item "$root/share/spirv-headers/*" $dest -Recurse -Force
+          New-Item -ItemType Directory -Force (Join-Path $env:VULKAN_SDK "include/spirv") | Out-Null
+          Copy-Item "$root/include/spirv/*" (Join-Path $env:VULKAN_SDK "include/spirv") -Recurse -Force
+          Get-ChildItem $dest
+
       - name: Portable CPU flags (no -march=native)
         shell: pwsh
         run: |
