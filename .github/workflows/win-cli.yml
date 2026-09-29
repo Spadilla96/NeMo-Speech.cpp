@@ -37,7 +37,7 @@ jobs:
       - name: Verify portable CPU flags
         shell: pwsh
         run: |
-          $c = Get-Content buildwinCMakeCache.txt | Select-String "GGML_NATIVE|GGML_AVX"
+          $c = Get-Content build/win/CMakeCache.txt | Select-String "GGML_NATIVE|GGML_AVX"
           $c
           if (-not ($c -match "GGML_NATIVE:BOOL=OFF")) { throw "GGML_NATIVE still on" }
 
