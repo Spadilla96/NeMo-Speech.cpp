@@ -30,8 +30,11 @@ jobs:
       - name: Add SPIRV-Headers CMake package to the Vulkan SDK
         shell: pwsh
         run: |
+          # Run outside the repo so vcpkg uses classic mode, not the manifest.
+          Push-Location $env:RUNNER_TEMP
           vcpkg install spirv-headers:x64-windows
           if ($LASTEXITCODE -ne 0) { throw "vcpkg install spirv-headers failed" }
+          Pop-Location
           $root = "$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows"
           $dest = Join-Path $env:VULKAN_SDK "Lib/cmake/SPIRV-Headers"
           New-Item -ItemType Directory -Force $dest | Out-Null
